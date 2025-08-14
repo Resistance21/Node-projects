@@ -16,7 +16,6 @@ const streamReader = async () => {
       if (dataRead !== 16384) {
         const endBuffer = Buffer.alloc(dataRead);
         originalFileRead.buffer.copy(endBuffer, 0, 0, dataRead);
-        console.log(`smaller, ${dataRead}`);
         copiedFile.write(endBuffer);
       } else {
         copiedFile.write(originalFileRead.buffer);
