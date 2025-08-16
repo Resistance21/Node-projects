@@ -10,9 +10,6 @@ const server = net.createServer((socket) => {
             c.write(`>${socket.id} has connected`);
         });
     }
-    socket.on("end", (socket) => {
-        console.log("someone disconnected");
-    });
     socket.on("data", (chunk) => {
         clients.map((c) => {
             c.write(`${chunk}`);

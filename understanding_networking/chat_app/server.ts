@@ -16,10 +16,6 @@ const server = net.createServer((socket: CustomSocket) => {
     });
   }
 
-  socket.on("end", (socket: net.Socket) => {
-    console.log("someone disconnected");
-  });
-
   socket.on("data", (chunk: string) => {
     clients.map((c) => {
       c.write(`${chunk}`);
