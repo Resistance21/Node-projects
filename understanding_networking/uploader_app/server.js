@@ -1,30 +1,32 @@
 import net from "net";
 import fs from "fs/promises";
-const server = net.createServer((socket) => {
+const server = net.createServer(async (socket) => {
     console.log("new connection");
     let fileHandle;
     let fileStream;
+    let fileName;
     console.log("Starting Transfer");
+    const headerBuffer = await new Promise((resolve) => socket.once("data", (data) => resolve(data)));
+    console.log("inside once");
+    const fileEndIndex = headerBuffer.indexOf("\n");
+    fileName = headerBuffer.subarray(0, fileEndIndex).toString();
+    fileHandle = await fs.open(`storage/${fileName}`, "w");
+    fileStream = fileHandle.createWriteStream();
+    fileStream.on("drain", () => {
+        socket.resume();
+    });
+    if (!fileStream.write(headerBuffer.subarray(fileEndIndex + 1))) {
+        socket.pause();
+    }
+    console.log(fileName);
     socket.on("data", async (data) => {
-        if (!fileHandle) {
+        if (!fileStream.write(data)) {
             socket.pause();
-            fileHandle = await fs.open("storage/test.txt", "w");
-            fileStream = fileHandle.createWriteStream();
-            fileStream.write(data);
-            socket.resume();
-            fileStream.on("drain", () => {
-                socket.resume();
-            });
-        }
-        else {
-            if (!fileStream.write(data)) {
-                console.log("large file still sending");
-                socket.pause();
-            }
         }
     });
     socket.on("end", async () => {
         console.log("File finised being saved");
+        fileName = undefined;
         await fileHandle.close();
     });
 });
