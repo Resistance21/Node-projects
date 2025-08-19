@@ -7,7 +7,6 @@ const server = net.createServer(async (socket) => {
     let fileName;
     console.log("Starting Transfer");
     const headerBuffer = await new Promise((resolve) => socket.once("data", (data) => resolve(data)));
-    console.log("inside once");
     const fileEndIndex = headerBuffer.indexOf("\n");
     fileName = headerBuffer.subarray(0, fileEndIndex).toString();
     fileHandle = await fs.open(`storage/${fileName}`, "w");
@@ -30,7 +29,7 @@ const server = net.createServer(async (socket) => {
         await fileHandle.close();
     });
 });
-server.listen(5050, "::1", () => {
+server.listen(5050, "172.31.", () => {
     console.log(`Upload server running on: `, server.address());
 });
 //# sourceMappingURL=server.js.map

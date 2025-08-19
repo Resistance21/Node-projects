@@ -13,7 +13,6 @@ const server = net.createServer(async (socket: net.Socket) => {
     socket.once("data", (data) => resolve(data))
   );
 
-  console.log("inside once");
   const fileEndIndex = headerBuffer.indexOf("\n");
   fileName = headerBuffer.subarray(0, fileEndIndex).toString();
   fileHandle = await fs.open(`storage/${fileName}`, "w");
@@ -39,6 +38,6 @@ const server = net.createServer(async (socket: net.Socket) => {
   });
 });
 
-server.listen(5050, "::1", () => {
+server.listen(5050, "172.31.", () => {
   console.log(`Upload server running on: `, server.address());
 });
